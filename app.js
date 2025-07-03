@@ -3,17 +3,17 @@ const express= require('express');
 const app = express();
 const path = require('path');
 const { logger, logEvents } = require('./middleware/logger');
-const errorHandler = require('./middleware/errorHandler');
-// const cookieParser = require('cookie-parser');
+const { successResponse, errorResponse } = require('./middleware/apiResponse');
+const cookieParser = require('cookie-parser');
 const port = process.env.PORT || 3050;
 const cors = require('cors');
 const corsOptions = require('./config/corsOptions');
 
 app.use(logger);
 app.use(cors(corsOptions));
-// app.use(cookieParser());
+app.use(cookieParser());
 app.use(express.json());
-// app.use("/",express.static(path.join(__dirname,"/public")));
+app.use("/",express.static(path.join(__dirname,"/public")));
 
 app.use("/",require("./routes/root"));
 app.use((req, res) => {
@@ -25,6 +25,6 @@ app.use((req, res) => {
     res.status(404).type('txt').send('404 Not Found');
   }
 });
-app.use(errorHandler);
+app.use(errorResponse);
 
 app.listen(port, () => console.log(`Server listening at http://localhost:${port}`));

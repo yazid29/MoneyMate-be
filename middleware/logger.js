@@ -23,7 +23,7 @@ const logEvents = async (message, logFileName) => {
 
 const logger = (req, res, next) => {
   const currentDateTime = new Date().toISOString();
-  logEvents(`${req.method}\t${req.url}\t${req.headers.origin}`, "reqLog.log");
+  logEvents(`${req.method}\t${req.url}\t${req.headers.origin}`, "logEvents.log");
   if(!req.path.includes("css")) console.log(`${currentDateTime} ${req.method} ${req.path}`);
   next();
 };
