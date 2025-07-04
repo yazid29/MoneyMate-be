@@ -8,7 +8,9 @@ const cookieParser = require('cookie-parser');
 const port = process.env.PORT || 3050;
 const cors = require('cors');
 const corsOptions = require('./config/corsOptions');
+const multer = require('multer');
 
+app.use(multer().any());
 app.use(logger);
 app.use(cors(corsOptions));
 app.use(cookieParser());
@@ -16,6 +18,7 @@ app.use(express.json());
 app.use("/",express.static(path.join(__dirname,"/public")));
 
 app.use("/",require("./routes/root"));
+app.use("/wallet",require("./routes/walletRoutes"));
 app.use((req, res) => {
   if (req.accepts('html')) {
     res.status(404).sendFile(path.join(__dirname, 'views', '404.html'));

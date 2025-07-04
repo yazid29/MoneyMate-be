@@ -1,9 +1,9 @@
 const { logEvents } = require('./logger'); 
 
-function success(res, data, message = "Operation successful", metadata = {}) {
-    return res.status(200).json({
+function success(res,code, message = "Operation successful", data, metadata = {}) {
+    return res.status(code).json({
+        code: code,
         status: "success",
-        code: 200,
         message: message,
         data: data,
         metadata: { ...metadata, timestamp: new Date().toISOString() }
@@ -44,8 +44,8 @@ function error(err, req, res, next) {
     }
 
     return res.status(statusCode).json({
-        status: "error",
         code: statusCode,
+        status: "error",
         message: customMessage,
         errors: errors,
         metadata: {

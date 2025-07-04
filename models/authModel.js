@@ -6,9 +6,16 @@ const { logger } = require("../middleware/logger");
 class authModel {
     getAllData = async () => {
         try {
-            const users = await pool('tb_house').select('*');
-            console.log(users);
+            const users = await pool('tb_user').select('*');
             return users;
+        } catch (error) {
+            console.log(error);
+        }
+    }
+    getUserbyUsername = async (username) => {
+        try {
+            const user = await pool('tb_user').select('id','username').where({ username: username });
+            return user[0];
         } catch (error) {
             console.log(error);
         }
