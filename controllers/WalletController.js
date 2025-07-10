@@ -26,7 +26,11 @@ exports.insertWallet = async (req, res) => {
     try {
         const body = req.body;
         try {
-            const data = await wallet.insertData(body);
+            let username = req.body.username;
+            console.log(username);
+            
+            const resultUser = await user.getUserbyUsername(username);
+            const data = await wallet.insertData(body,resultUser.id);
             if(data == 1) return successResponse(res, 200, 'Create Data Success');
         } catch (error) {
             return errorResponse(res, error.code? error.code:500, error.errmsg, error);

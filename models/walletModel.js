@@ -29,18 +29,19 @@ class walletModel {
         }
     }
     
-    insertData = async (data) => {
+    insertData = async (data,userId) => {
         try {
             const wallets = await pool('tb_wallets').insert({
-                user_id:data.user_id,
+                user_id:userId,
                 name_wallet:data.name,
                 balance:data.balance,
                 type:data.type
             });
             console.log('Wallet created successfully');
-            return wallets;
+            return 1;
         } catch (error) {
             console.log(error);
+            return 0;
         }
     }
 }

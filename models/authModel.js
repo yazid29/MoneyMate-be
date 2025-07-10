@@ -14,7 +14,11 @@ class authModel {
     }
     getUserbyUsername = async (username) => {
         try {
+            const userString = (await pool('tb_user').select('id','username').where({ username: username })).toString();
+            console.log(userString);
+            
             const user = await pool('tb_user').select('id','username').where({ username: username });
+            
             return user[0];
         } catch (error) {
             console.log(error);
