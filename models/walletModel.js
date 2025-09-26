@@ -2,48 +2,35 @@ const pool = require("../connection/db");
 const { logger } = require("../middleware/logger");
 
 class walletModel {
-    getAllData = async () => {
-        try {
-            const wallets = await pool('tb_wallets').select(
-                'name_wallet','balance','type'
-            );
-            return wallets;
-        } catch (error) {
-            console.log(error);
-        }
-    }
-    getDatabyUsername = async (id_user,name_wallet = "all") => {
-        try {
-            let query = pool('tb_wallets').select('name_wallet', 'balance', 'type');
-            query = query.where({ user_id: id_user });
+    createWallet = async (data) => {
+        const [walletId] = await pool('tb_wallets').insert(data).returning('id');
+        return walletId;
+    };
 
-            if (name_wallet !== "all") {
-                query = query.where({ name_wallet: name_wallet });
-            }
+    getWalletById = async (walletId) => {
+        return pool('tb_wallets').where({ id: walletId, deleted_at: null }).first();
+    };
 
-            const wallets = await query;
+    getWalletsByUserId = async (userId) => {
+        return pool('tb_wallets as t1')
+            .select('t1.*')
+            .where('t1.user_id', userId)
+            .whereNull('t1.deleted_at')
+            .groupBy('t1.id')
+            .orderBy('t1.created_at', 'asc');
+    };
 
-            return wallets;
-        } catch (error) {
-            console.log(error);
-        }
-    }
+    updateWallet = async (walletId, data) => {
+        return pool('tb_wallets').where({ id: walletId }).update({
+            ...data,
+            updated_at: new Date()
+        });
+    };
+
+    deleteWallet = async (walletId) => {
+        return pool('tb_wallets').where({ id: walletId }).del();
+    };
     
-    insertData = async (data,userId) => {
-        try {
-            const wallets = await pool('tb_wallets').insert({
-                user_id:userId,
-                name_wallet:data.name,
-                balance:data.balance,
-                type:data.type
-            });
-            console.log('Wallet created successfully');
-            return 1;
-        } catch (error) {
-            console.log(error);
-            return 0;
-        }
-    }
 }
 
 module.exports = new walletModel();
