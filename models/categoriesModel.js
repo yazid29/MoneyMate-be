@@ -2,19 +2,15 @@ const pool = require("../connection/db");
 const { logger } = require("../middleware/logger");
 
 class categoriesModel {
-    createCategory = async (data) => {
-        let userId = data.userName;
-        let nameCategory = data.category;
-        let type = data.type;
-        let isDefault = false;
+    insertCategory = async (data) => {
         if (!userId) {
             throw new Error('Category must be linked to a user');
         }
         
         const [categoryId] = await db('tb_categories').insert({
-            user_id: userId || null,
-            name: nameCategory,
-            type: type,
+            user_id: data.userId,
+            name: data.nameCategory,
+            type: data.type,
             is_default: isDefault,
         }).returning('id');
         return categoryId;
