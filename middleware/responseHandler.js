@@ -12,9 +12,9 @@ function success(data,res,statusCode, detailMessage,metadata = {}) {
 
 // Middleware untuk respons error (dengan integrasi logging)
 function error(errorMessage, req, res, code) {
-    console.log('errorMessage.statusCode',code);
+    // console.log('errorMessage.statusCode',code);
     
-    let statusCode = code!=null? code : 500;
+    let statusCode = code!=null && code != undefined? code : 500;
     let statusMessage = statusMsg[statusCode];
     let errors = errorMessage.message? errorMessage.message:errorMessage;
 
@@ -42,8 +42,35 @@ function error(errorMessage, req, res, code) {
         }
     });
 }
+const globalErrorHandler = (err, req, res, next) => {
+    const statusCode = err.statusCode || 500;
+    const errorLogMsg = `${req.method}\t${req.url}\t${statusCode}\t${err.message}`;
+    if (statusCode === 500 && err.stack) {
+        logEvents(`Stack: ${err.stack}`, 'errLog.log');
+    } else {
+        logEvents(errorLogMsg, 'errLog.log');
+    }
+
+    const statusMessage = statusMsg[statusCode] || 'Server Error';
+
+    const messageDetail = (statusCode === 500 && process.env.NODE_ENV === 'production') 
+        ? 'Something went wrong on the server.' 
+        : err.message; 
+    
+    return res.status(statusCode).json({
+        code: statusCode,
+        status: "error",
+        message: statusMessage,
+        message_detail: messageDetail,
+        metadata: {
+            timestamp: new Date().toISOString(),
+            trace_id: req.headers['x-request-id'] || 'N/A'
+        }
+    });
+};
 
 module.exports = {
     successResponse: success,
-    errorResponse: error
+    errorResponse: globalErrorHandler
+    // errorResponse: error
 };
