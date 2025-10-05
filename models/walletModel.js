@@ -3,8 +3,14 @@ const { logger } = require("../middleware/logger");
 
 class walletModel {
     createWallet = async (data) => {
-        const [walletId] = await pool('tb_wallets').insert(data).returning('id');
-        return walletId;
+        const [categoryId] = await pool('tb_wallets').insert({
+            user_id: data.userId,
+            name: data.nameWallet,
+            owner_type: data.ownerType,
+            balance: data.balance,
+            type: data.typeWallet,
+        }).returning('id');
+        return categoryId;
     };
 
     getWalletById = async (walletId) => {
@@ -27,10 +33,11 @@ class walletModel {
         });
     };
 
-    deleteWallet = async (walletId) => {
-        return pool('tb_wallets').where({ id: walletId }).del();
+    softDelete = async (walletId) => {
+        return pool('tb_wallets').where({ id: walletId }).update({
+            deleted_at: new Date()
+        });
     };
-    
 }
 
 module.exports = new walletModel();
