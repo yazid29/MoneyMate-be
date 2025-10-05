@@ -19,6 +19,7 @@ app.use("/",express.static(path.join(__dirname,"/public")));
 
 app.use("/",require("./routes/root"));
 app.use("/wallet",require("./routes/walletRoutes"));
+app.use("/category",require("./routes/categoryRoutes"));
 // app.use((req, res) => {
 //   if (req.accepts('html')) {
 //     res.status(404).sendFile(path.join(__dirname, 'views', '404.html'));
